@@ -1,7 +1,58 @@
+"use client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowDown, ArrowUp, Bitcoin, DollarSign, LineChart, Users } from "lucide-react"
+import { useState, useEffect } from "react"
 
 export default function AdminDashboardPage() {
+
+
+
+   const [searchTerm, setSearchTerm] = useState("")
+  const [statusFilter, setStatusFilter] = useState("all")
+  const [users, setUsers] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch('/api/users')
+        if (!response.ok) throw new Error('Failed to fetch users')
+        const data = await response.json()
+        setUsers(data)
+      } catch (err) {
+        setError('Failed to load users')
+        console.error('Fetch error:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchUsers()
+  }, [])
+
+  // Filter users based on search term and status filter
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch =
+      `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user._id.toLowerCase().includes(searchTerm.toLowerCase())
+
+    const matchesStatus = statusFilter === "all" || user.kycStatus === statusFilter
+
+    return matchesSearch && matchesStatus
+  })
+
+  if (loading) {
+    return <div>Loading users...</div>
+  }
+
+  if (error) {
+    return <div className="text-red-500">{error}</div>
+  }
+
+
+  
   return (
     <div className="flex flex-col gap-4">
       <div>

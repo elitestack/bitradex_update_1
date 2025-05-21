@@ -67,7 +67,7 @@ export async function POST(request: Request) {
             BTC: 5.000,
             ETH: 10.000
         },
-        kycStatus: 'unverified',
+        kycStatus: 'pending',
         createdAt: new Date(),
         updatedAt: new Date(),
         balance: 1000

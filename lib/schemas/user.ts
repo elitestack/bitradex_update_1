@@ -1,23 +1,33 @@
 // lib/schemas/user.ts
 
-export interface User {
-    balance: any
-    firstName: string
-    lastName: string
-    email: string
-    password: string
-    fiatBalance: number
-    cryptoAssets: {
-        BTC: number
-        ETH: number
-      [currency: string]: number
-    }
-    kycStatus: 'unverified' | 'pending' | 'verified' | 'rejected'
-    createdAt: Date
-    updatedAt: Date
-  }
   
   // Update validation if needed
+
+  export interface User {
+   _id?: string
+  balance: any
+  firstName: string
+  lastName: string
+  email: string
+  password: string
+  phone?: string
+  address?: string
+  city?: string
+  state?: string
+  zipCode?: string
+  country?: string
+  fiatBalance: number
+  cryptoAssets: {
+    BTC: number
+    ETH: number
+    [currency: string]: number
+  }
+  kycStatus: 'unverified' | 'pending' | 'verified' | 'rejected'
+  createdAt: Date
+  updatedAt: Date
+}
+
+
 
 
   

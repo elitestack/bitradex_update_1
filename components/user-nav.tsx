@@ -1,5 +1,7 @@
 import Link from "next/link"
-import { CreditCard, LogOut, Settings, User } from "lucide-react"
+import { CreditCard, Home, LogOut, Settings, User, Wallet } from "lucide-react"
+import Cookies from 'js-cookie'
+// import { Cookie } from "lucide-react"
 
 import {
   DropdownMenu,
@@ -14,6 +16,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 
 export function UserNav() {
+
+  const username = Cookies.get('username');
+  const email = Cookies.get('email');
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -27,11 +32,22 @@ export function UserNav() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">John Doe</p>
-            <p className="text-xs leading-none text-muted-foreground">john.doe@example.com</p>
+            <p className="text-sm font-medium leading-none">{email}</p>
+            {/* <p className="text-xs leading-none text-muted-foreground">john.doe@example.com</p> */}
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        
+        <DropdownMenuGroup>
+          <DropdownMenuItem asChild>
+            <Link href="/dashboard">
+              <Home className="mr-2 h-4 w-4" />
+              <span>Dashboard</span>
+            </Link>
+          </DropdownMenuItem>
+          
+
+        </DropdownMenuGroup>
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
             <Link href="/dashboard/profile">
@@ -39,18 +55,28 @@ export function UserNav() {
               <span>Profile</span>
             </Link>
           </DropdownMenuItem>
+          
+
+        </DropdownMenuGroup>
+        <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href="/dashboard/transactions">
+            <Link href="/dashboard/deposit">
+              <Wallet className="mr-2 h-4 w-4" />
+              <span>Deposit</span>
+            </Link>
+          </DropdownMenuItem>
+          
+
+        </DropdownMenuGroup>
+        <DropdownMenuGroup>
+          <DropdownMenuItem asChild>
+            <Link href="/dashboard/withdraw">
               <CreditCard className="mr-2 h-4 w-4" />
-              <span>Transactions</span>
+              <span>Withdraw</span>
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href="/dashboard/settings">
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Settings</span>
-            </Link>
-          </DropdownMenuItem>
+          
+
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { PencilIcon, Search, Trash2, UserCog } from "lucide-react"
 
@@ -10,84 +10,65 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
-// Sample user data
-const users = [
-  {
-    id: "USR001",
-    name: "John Doe",
-    email: "john.doe@example.com",
-    status: "active",
-    balance: 50.0,
-    joinDate: "May 10, 2025",
-  },
-  {
-    id: "USR002",
-    name: "Jane Smith",
-    email: "jane.smith@example.com",
-    status: "active",
-    balance: 1250.75,
-    joinDate: "May 8, 2025",
-  },
-  {
-    id: "USR003",
-    name: "Robert Johnson",
-    email: "robert.johnson@example.com",
-    status: "inactive",
-    balance: 0.0,
-    joinDate: "May 5, 2025",
-  },
-  {
-    id: "USR004",
-    name: "Emily Davis",
-    email: "emily.davis@example.com",
-    status: "active",
-    balance: 3450.25,
-    joinDate: "May 3, 2025",
-  },
-  {
-    id: "USR005",
-    name: "Michael Wilson",
-    email: "michael.wilson@example.com",
-    status: "suspended",
-    balance: 125.5,
-    joinDate: "Apr 28, 2025",
-  },
-  {
-    id: "USR006",
-    name: "Sarah Brown",
-    email: "sarah.brown@example.com",
-    status: "active",
-    balance: 780.3,
-    joinDate: "Apr 25, 2025",
-  },
-  {
-    id: "USR007",
-    name: "David Miller",
-    email: "david.miller@example.com",
-    status: "active",
-    balance: 2100.0,
-    joinDate: "Apr 20, 2025",
-  },
-]
+interface User {
+  _id: string
+  firstName: string
+  lastName: string
+  email: string
+  balance: number
+  createdAt: string
+  kycStatus: 'verified' | 'pending' | 'unverified'
+}
+
 
 export default function AdminUsersPage() {
+  
   const [searchTerm, setSearchTerm] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
+    const [statusFilter, setStatusFilter] = useState("all")
+    const [users, setUsers] = useState<any[]>([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState("")
+  
+    useEffect(() => {
+      const fetchUsers = async () => {
+        try {
+          const response = await fetch('/api/users')
+          if (!response.ok) throw new Error('Failed to fetch users')
+          const data = await response.json()
+          setUsers(data)
+        } catch (err) {
+          setError('Failed to load users')
+          console.error('Fetch error:', err)
+        } finally {
+          setLoading(false)
+        }
+      }
+  
+      fetchUsers()
+    }, [])
+  
+    // Filter users based on search term and status filter
+    const filteredUsers = users.filter((user) => {
+      const matchesSearch =
+        `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user._id.toLowerCase().includes(searchTerm.toLowerCase())
+  
+      const matchesStatus = statusFilter === "all" || user.kycStatus === statusFilter
+  
+      return matchesSearch && matchesStatus
+    })
+  
+    if (loading) {
+      return <div>Loading users...</div>
+    }
+  
+    if (error) {
+      return <div className="text-red-500">{error}</div>
+    }
+  
 
-  // Filter users based on search term and status filter
-  const filteredUsers = users.filter((user) => {
-    // Search filter
-    const matchesSearch =
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.id.toLowerCase().includes(searchTerm.toLowerCase())
-
-    // Status filter
-    const matchesStatus = statusFilter === "all" || user.status === statusFilter
-
-    return matchesSearch && matchesStatus
-  })
-
+  
   return (
     <div className="flex flex-col gap-4">
       <div>
@@ -127,6 +108,9 @@ export default function AdminUsersPage() {
               </Select>
             </div>
             <div className="rounded-md border">
+
+{/*  */}
+
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -142,28 +126,29 @@ export default function AdminUsersPage() {
                 <TableBody>
                   {filteredUsers.length > 0 ? (
                     filteredUsers.map((user) => (
-                      <TableRow key={user.id}>
-                        <TableCell className="font-medium">{user.id}</TableCell>
-                        <TableCell>{user.name}</TableCell>
+                      <TableRow key={user._id}>
+                        <TableCell className="font-medium">{user._id}</TableCell>
+                        <TableCell>{`${user.firstName} ${user.lastName}`}</TableCell>
                         <TableCell>{user.email}</TableCell>
                         <TableCell>
                           <span
                             className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                              user.status === "active"
+                              user.kycStatus === "verified"
                                 ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
-                                : user.status === "inactive"
-                                  ? "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
+                                : user.kycStatus === "pending"
+                                  ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
                                   : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
                             }`}
                           >
-                            {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
+                            {user.kycStatus?.charAt(0).toUpperCase() + user.kycStatus?.slice(1)}
                           </span>
                         </TableCell>
                         <TableCell>${user.balance.toFixed(2)}</TableCell>
-                        <TableCell>{user.joinDate}</TableCell>
+                        <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
+                        
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
-                            <Link href={`/admin/users/${user.id}`}>
+                            <Link href={`/admin/users/${user._id}`}>
                               <Button variant="outline" size="icon" className="h-8 w-8">
                                 <PencilIcon className="h-4 w-4" />
                                 <span className="sr-only">Edit</span>
@@ -175,6 +160,7 @@ export default function AdminUsersPage() {
                             </Button>
                           </div>
                         </TableCell>
+
                       </TableRow>
                     ))
                   ) : (
@@ -186,6 +172,9 @@ export default function AdminUsersPage() {
                   )}
                 </TableBody>
               </Table>
+
+{/*  */}
+
             </div>
           </div>
         </CardContent>

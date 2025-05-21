@@ -22,11 +22,6 @@ const navItems: NavItem[] = [
     icon: Home,
   },
   {
-    title: "Portfolio",
-    href: "/dashboard/portfolio",
-    icon: BarChart3,
-  },
-  {
     title: "Deposit",
     href: "/dashboard/deposit",
     icon: Wallet,
@@ -36,31 +31,13 @@ const navItems: NavItem[] = [
     href: "/dashboard/withdraw",
     icon: CreditCard,
   },
-  {
-    title: "Transactions",
-    href: "/dashboard/transactions",
-    icon: History,
-  },
-  {
-    title: "KYC Verification",
-    href: "/dashboard/kyc-verification",
-    icon: FileCheck,
-  },
+
   {
     title: "Profile",
     href: "/dashboard/profile",
     icon: User,
   },
-  {
-    title: "Security",
-    href: "/dashboard/security",
-    icon: Lock,
-  },
-  {
-    title: "Settings",
-    href: "/dashboard/settings",
-    icon: Settings,
-  },
+
 ]
 
 export function DashboardNav() {

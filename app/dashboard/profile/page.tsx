@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,38 +12,93 @@ import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 export default function ProfilePage() {
-  const [isLoading, setIsLoading] = useState(false)
+   const [isLoading, setIsLoading] = useState(false)
+  const [isFetching, setIsFetching] = useState(true)
   const [formData, setFormData] = useState({
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@example.com",
-    phone: "+1 (555) 123-4567",
-    address: "123 Main St",
-    city: "New York",
-    state: "NY",
-    zipCode: "10001",
-    country: "United States",
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    address: "",
+    city: "",
+    state: "",
+    zipCode: "",
+    country: "",
   })
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        // In a real app, retrieve email from auth context
+        const email = "john.doe@example.com"
+        const response = await fetch(`/api/user`)
+        if (!response.ok) throw new Error('Failed to fetch')
+        
+        const userData = await response.json()
+
+        console.log(response);
+        setFormData({
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          email: userData.email,
+          phone: userData.phone || "",
+          address: userData.address || "",
+          city: userData.city || "",
+          state: userData.state || "",
+          zipCode: userData.zipCode || "",
+          country: userData.country || "",
+        })
+      } catch (error) {
+        console.error('Fetch error:', error)
+      } finally {
+        setIsFetching(false)
+      }
+    }
+
+    fetchUserData()
+  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+    setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
 
-    // Simulate API call
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-      // Success notification would go here
-    } catch (error) {
-      console.error("Update failed:", error)
-    } finally {
-      setIsLoading(false)
+
+
+
+  // Update the handleSubmit function in your ProfilePage component
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
+  setIsLoading(true)
+
+  try {
+    const response = await fetch('/api/profile_', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.error || 'Update failed')
     }
+
+    // Optional: Show success notification
+    console.log('Update successful')
+  } catch (error) {
+    console.error('Update error:', error)
+    // Optional: Show error notification
+  } finally {
+    setIsLoading(false)
   }
+}
+
+
+
+  if (isFetching) return <div className="p-4">Loading profile...</div>
 
   return (
     <div className="space-y-6">
@@ -102,7 +157,7 @@ export default function ProfilePage() {
                   value={formData.email}
                   onChange={handleChange}
                   disabled={isLoading}
-                />
+                readOnly />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone number</Label>
@@ -120,7 +175,7 @@ export default function ProfilePage() {
             <CardDescription>Update your address details</CardDescription>
           </CardHeader>
           <CardContent>
-            <form className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="address">Street address</Label>
                 <Input
@@ -174,11 +229,8 @@ export default function ProfilePage() {
           <CardDescription>Manage your account security and password</CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="current-password">Current password</Label>
-              <Input id="current-password" type="password" />
-            </div>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            
             <div className="space-y-2">
               <Label htmlFor="new-password">New password</Label>
               <Input id="new-password" type="password" />

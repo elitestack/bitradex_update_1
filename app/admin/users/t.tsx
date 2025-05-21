@@ -1,8 +1,9 @@
 "use client"
-import { useEffect, useState } from "react"
-import { useRouter, useParams } from "next/navigation" // Add useParams
 
 import type React from "react"
+
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { ArrowLeft, Save, Lock } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -14,142 +15,62 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 
-interface UserData {
-  status: string
-  _id: string
-  firstName: string
-  lastName: string
-  email: string
-  kycStatus: string
-  balance: number
-  createdAt: string
-  phone: string
-  address: string
-  city: string
-  state: string
-  zipCode: string
-  country: string
-  bankName: string
-  accountNumber: string
-  routingNumber: string
-  bitcoinAddress: string
-  ethereumAddress: string
-}
-
-
-export default function UserEditPage() {
-
-
+export default function UserEditPage({ params }: { params: { id: string } }) {
   const router = useRouter()
-  const params = useParams()
-  const userId = params.id as string // Properly typed access
+  const userId = params.id
   const [isLoading, setIsLoading] = useState(false)
-  const [userData, setUserData] = useState<UserData | null>(null)
-  const [error, setError] = useState("")
 
-
-
+  // In a real app, you would fetch user data based on the ID
+  const [userData, setUserData] = useState({
+    id: userId,
+    firstName: "John",
+    lastName: "Doe",
+    email: "john.doe@example.com",
+    status: "active",
+    balance: 50.0,
+    joinDate: "May 10, 2025",
+    phone: "+1 (555) 123-4567",
+    address: "123 Main St",
+    city: "New York",
+    state: "NY",
+    zipCode: "10001",
+    country: "United States",
+    // Payment details
+    bankName: "",
+    accountNumber: "",
+    routingNumber: "",
+    bitcoinAddress: "",
+    ethereumAddress: "",
+  })
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const { name, value } = e.target
-  setUserData(prev => {
-    if (!prev) return null
-    // Handle numeric fields
-    const numericFields = ['balance']
-    return {
-      ...prev,
-      [name]: numericFields.includes(name) ? Number(value) : value
-    }
-  })
-}
-
-
-
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault()
-  if (!userData) return
-
-  setIsLoading(true)
-  try {
-    const response = await fetch(`/api/updateprofile_admin/${userId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userData),
-    })
-
-    // Log the error response if not OK
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error("Server response:", errorText)
-      throw new Error('Update failed: ' + response.status)
-    }
-
-    router.push("/admin/users")
-  } catch (error) {
-    console.error("Update failed:", error)
-    setError('Failed to save changes')
-  } finally {
-    setIsLoading(false)
+    const { name, value } = e.target
+    setUserData((prev) => ({ ...prev, [name]: value }))
   }
-}
 
-
-
-
-  // Fetch user data
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await fetch(`/api/users/${userId}`)
-        if (!response.ok) throw new Error('Failed to fetch user')
-        const data = await response.json()
-        setUserData(data)
-      } catch (err) {
-        setError('Failed to load user data')
-        console.error('Fetch error:', err)
-      }
-    }
-    
-    fetchUser()
-  }, [userId])
-
-  
   const handleSelectChange = (name: string, value: string) => {
-    setUserData(prev => prev ? { ...prev, [name]: value } : null)
+    setUserData((prev) => ({ ...prev, [name]: value }))
   }
 
-  
-
-  // Update your change handlers like this:
-
-// For regular input fields
-const handleInputChange = (p0: string, checked: boolean, e: React.ChangeEvent<HTMLInputElement>) => {
-  const { name, value } = e.target
-  setUserData(prev => prev ? { ...prev, [name]: value } : null)
-}
-
-// For switch components
-const handleSwitchChange = (name: string, checked: boolean) => {
-  setUserData(prev => prev ? { ...prev, [name]: checked ? "active" : "inactive" } : null)
-}
-
-// For select components (keep this one)
-
-
-
-  if (!userData) {
-    return <div className="p-4">Loading user data...</div>
+  const handleSwitchChange = (name: string, checked: boolean) => {
+    setUserData((prev) => ({ ...prev, [name]: checked ? "active" : "inactive" }))
   }
 
-  if (error) {
-    return <div className="p-4 text-red-500">{error}</div>
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsLoading(true)
+
+    // Simulate API call
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1500))
+      // Success notification would go here
+      router.push("/admin/users")
+    } catch (error) {
+      console.error("Update failed:", error)
+    } finally {
+      setIsLoading(false)
+    }
   }
-
-
-
-
 
   return (
     <div className="flex flex-col gap-4">
@@ -215,14 +136,14 @@ const handleSwitchChange = (name: string, checked: boolean) => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                 <Input
-    id="email"
-    name="email"
-    type="email"
-    value={userData.email}
-    onChange={handleChange}
-    disabled={isLoading}
-  />
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={userData.email}
+                    onChange={handleChange}
+                    disabled={isLoading}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">Phone number</Label>
@@ -290,58 +211,29 @@ const handleSwitchChange = (name: string, checked: boolean) => {
               <form className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="status">Account Status</Label>
-    <Select 
-    value={userData.kycStatus} 
-    onValueChange={(value) => handleSelectChange("kycStatus", value)}
-  >
-    <SelectTrigger>
-      <SelectValue placeholder="Select status" />
-    </SelectTrigger>
-    <SelectContent>
-      <SelectItem value="verified">Verified</SelectItem>
-      <SelectItem value="pending">Pending</SelectItem>
-      <SelectItem value="unverified">Unverified</SelectItem>
-    </SelectContent>
-  </Select>
-
+                  <Select value={userData.status} onValueChange={(value) => handleSelectChange("status", value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="inactive">Inactive</SelectItem>
+                      <SelectItem value="suspended">Suspended</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="balance">Account Balance ($)</Label>
- <Input
-    id="balance"
-    name="balance"
-    type="number"
-    value={userData.balance.toString()}
-    onChange={handleChange}
-    disabled={isLoading}
-  />                  <p className="text-xs text-muted-foreground">Manually adjust the user's account balance</p>
+                  <Input
+                    id="balance"
+                    name="balance"
+                    type="number"
+                    value={userData.balance.toString()}
+                    onChange={handleChange}
+                    disabled={isLoading}
+                  />
+                  <p className="text-xs text-muted-foreground">Manually adjust the user's account balance</p>
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="balance">BTC Account Balance ($)</Label>
- <Input
-  id="bitcoinAddress"
-  name="bitcoinAddress"
-  value={userData.bitcoinAddress || ''}
-  onChange={handleChange}
-  disabled={isLoading}
-/>
-               <p className="text-xs text-muted-foreground">Manually adjust the user's account balance</p>
-                </div>
-
-
-                <div className="space-y-2">
-                  <Label htmlFor="balance">ETH Account Balance ($)</Label>
- <Input
-  id="ethereumAddress"
-  name="ethereumAddress"
-  value={userData.ethereumAddress || ''}
-  onChange={handleChange}
-  disabled={isLoading}
-/>
-               <p className="text-xs text-muted-foreground">Manually adjust the user's account balance</p>
-                </div>
-
                 <Separator />
                 <div className="space-y-4">
                   <h3 className="text-sm font-medium">Account Permissions</h3>
@@ -350,39 +242,33 @@ const handleSwitchChange = (name: string, checked: boolean) => {
                       <Label htmlFor="trading">Trading Enabled</Label>
                       <p className="text-xs text-muted-foreground">Allow user to trade cryptocurrencies</p>
                     </div>
-                    // Update all Switch components to use handleSwitchChange
-<Switch
-  id="trading"
-  checked={userData.status === "active"}
-  onCheckedChange={(checked) => handleSwitchChange("status", checked)}
-/>
+                    <Switch
+                      id="trading"
+                      checked={userData.status === "active"}
+                      onCheckedChange={(checked) => handleSwitchChange("status", checked)}
+                    />
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
                       <Label htmlFor="withdrawals">Withdrawals Enabled</Label>
                       <p className="text-xs text-muted-foreground">Allow user to withdraw funds</p>
                     </div>
-                    // Update all Switch components to use handleSwitchChange
-<Switch
-  id="withdrawals"
-  checked={userData.status === "active"}
-  onCheckedChange={(checked) => handleSwitchChange("status", checked)}
-/>
-                  
+                    <Switch
+                      id="withdrawals"
+                      checked={userData.status === "active"}
+                      onCheckedChange={(checked) => handleSwitchChange("status", checked)}
+                    />
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
                       <Label htmlFor="deposits">Deposits Enabled</Label>
                       <p className="text-xs text-muted-foreground">Allow user to deposit funds</p>
                     </div>
-                    
-
-
-<Switch
-  id="deposits"
-  checked={userData.status === "active"}
-  onCheckedChange={(checked) => handleSwitchChange("status", checked)}
-/>
+                    <Switch
+                      id="deposits"
+                      checked={userData.status === "active"}
+                      onCheckedChange={(checked) => handleSwitchChange("status", checked)}
+                    />
                   </div>
                 </div>
               </form>

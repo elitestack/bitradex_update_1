@@ -15,8 +15,7 @@ export async function GET(request: NextRequest) {
   const client = await clientPromise
   const db = client.db('bitradex')
   const user = await db.collection('users').findOne(
-    { email: session.email },
-    { projection: { email: 1, balance: 1 } }
+    { email: session.email }
   )
 
   if (!user) {
@@ -28,6 +27,15 @@ export async function GET(request: NextRequest) {
 
   return new NextResponse(JSON.stringify({
     email: user.email,
-    balance: user.balance
+    balance: user.balance,
+    firstName: user.firstName,
+  lastName: user.lastName,
+  password: user.password,
+  phone: user.phone,
+  address: user.address,
+  city: user.city,
+  state : user.state,
+  zipCode : user.zipCode, 
+  country : user.country
   }))
 }

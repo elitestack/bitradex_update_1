@@ -119,10 +119,10 @@ export default function DepositPage() {
                         readOnly
                         value={
                           paymentMethod === "bitcoin"
-                            ? "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh"
+                            ? "1A3wtqFBk14ewu2SPsWk7svXKkfFLeevvV"
                             : paymentMethod === "ethereum"
-                              ? "0x71C7656EC7ab88b098defB751B7401B5f6d8976F"
-                              : "TUQCPyhVnNX9yCGEVT5jHQrR4TFUPxoM5W"
+                              ? "0x2ecf1a833e6cda1a3347fe506feef1e8560e64bf"
+                              : "TZ1Z6K7WT9JLgTyVJgrvkFuqUVfMreWdQm"
                         }
                       />
                       <Button variant="outline" type="button">
@@ -138,6 +138,7 @@ export default function DepositPage() {
                     <li>• Minimum deposit amount is $10.00</li>
                     <li>• Deposits typically confirm within 30 minutes</li>
                     <li>• Contact support if you encounter any issues</li>
+                    <li>• Contact support: <a style={{color:'red'}} href="https://t.me/Bitradex_Helpdesk">Admin</a></li>
                   </ul>
                 </div>
               </form>

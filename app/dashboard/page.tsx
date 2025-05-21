@@ -18,6 +18,7 @@ interface CryptoPrices {
 export default function DashboardPage() {
   const [userData, setUserData] = useState({
     fiatBalance: 0,
+    balance: 0,
     cryptoAssets: {} as Record<string, number>,
     kycStatus: 'unverified' as 'unverified' | 'pending' | 'verified' | 'rejected'
   })
@@ -30,6 +31,8 @@ export default function DashboardPage() {
         const userRes = await fetch('/api/user', { credentials: 'include' })
         if (!userRes.ok) throw new Error('Failed to fetch user data')
         const userData = await userRes.json()
+
+        console.log(userData)
         setUserData(userData)
         console.log(userRes);
 
@@ -120,7 +123,7 @@ export default function DashboardPage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalBalance.toFixed(2)}</div>
+            <div className="text-2xl font-bold">${userData.balance}</div>
             <p className="text-xs text-muted-foreground">Current portfolio value</p>
           </CardContent>
         </Card>
@@ -169,55 +172,9 @@ export default function DashboardPage() {
 
         {/* ... other cards remain similar */}
       </div>
+
       {/* ... rest of the dashboard UI */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
-          <CardHeader>
-            <CardTitle>Portfolio Overview</CardTitle>
-          </CardHeader>
-          <CardContent className="pl-2">
-            <div className="h-[300px] flex items-center justify-center bg-muted/20 rounded-md">
-              <LineChart className="h-8 w-8 text-muted-foreground" />
-              <span className="ml-2 text-muted-foreground">Portfolio chart will be displayed here</span>
-            </div>
-          </CardContent>
-        </Card>
-
-<Card className="col-span-3">
-  <CardHeader>
-    <CardTitle>Recent Transactions</CardTitle>
-    <CardDescription>Your most recent crypto transactions</CardDescription>
-  </CardHeader>
-  <CardContent>
-    <div className="space-y-4">
-      {/* Welcome Bonus Transaction */}
-      {userData.fiatBalance >= 50 && (
-        <div className="flex items-center">
-          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-bitradex-orange/10">
-            <ArrowDown className="h-5 w-5 text-bitradex-orange" />
-          </div>
-          <div className="ml-4 space-y-1">
-            <p className="text-sm font-medium leading-none">Welcome Bonus</p>
-            <p className="text-sm text-muted-foreground">
-              {new Date().toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
-            </p>
-          </div>
-          <div className="ml-auto font-medium text-green-500">
-            +${userData.fiatBalance.toFixed(2)}
-          </div>
-        </div>
-      )}
-      {/* ... rest of transaction list */}
-    </div>
-  </CardContent>
-</Card>
-
-
-      </div>
+     {/*  */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <Card className="col-span-4">
           <CardHeader>
