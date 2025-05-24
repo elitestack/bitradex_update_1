@@ -315,7 +315,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Network Fee:</span>
-                      <span>$2.50</span>
+                      <span>$123</span>
                     </div>
                     <Separator className="my-2" />
                     <div className="flex justify-between text-sm font-medium">
@@ -399,7 +399,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Processing Fee:</span>
-                      <span>$5.00</span>
+                      <span>$123</span>
                     </div>
                     <Separator className="my-2" />
                     <div className="flex justify-between text-sm font-medium">
