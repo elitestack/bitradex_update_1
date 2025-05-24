@@ -320,7 +320,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                     <Separator className="my-2" />
                     <div className="flex justify-between text-sm font-medium">
                       <span>Total:</span>
-                      <span>${amount ? (Number.parseFloat(amount) + 2.5).toFixed(2) : "2.50"}</span>
+                      <span>${amount ? (Number.parseFloat(amount) + 123).toFixed(2) : "123"}</span>
                     </div>
                   </div>
                 </div>
