@@ -133,7 +133,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     const payload = {
       amount: numericAmount,
       method: withdrawMethod,
-      networkFee: withdrawMethod === 'crypto' ? 2.5 : 5,
+      networkFee: withdrawMethod === 'crypto' ? 123 : 123,
       walletAddress: withdrawMethod === 'crypto' ? address : undefined,
       bankDetails
     }
